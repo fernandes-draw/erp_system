@@ -27,8 +27,18 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     # My APPS
+    "crispy_forms",
+    "crispy_bootstrap5",
     "accounts",
 ]
+
+# Definir o bootstrap 5 como o padrão do Crispy
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# URLs de redirecionamento
+LOGIN_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "login"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
