@@ -18,11 +18,28 @@ const toggleBtn = document.getElementById('toggleSidebar');
 const body = document.body;
 const toggleIcon = document.getElementById('toggleIcon');
 
-toggleBtn.addEventListener('click', () => {
-  body.classList.toggle('sidebar-collapsed');
-  if (body.classList.contains('sidebar-collapsed')) {
-    toggleIcon.classList.replace('bi-chevron-left', 'bi-chevron-right');
-  } else {
-    toggleIcon.classList.replace('bi-chevron-right', 'bi-chevron-left');
-  }
-});
+// Verificar se existe uma preferência salva no localStorage ao carregar a página
+const sidebarState = localStorage.getItem('sidebarState');
+
+if (sidebarState === 'collapsed') {
+  body.classList.add('sidebar-collapsed');
+  if (toggleIcon) toggleIcon.classList.replace('bi-chevron-left', 'bi-chevron-right');
+} else {
+  body.classList.remove('sidebar-collapsed');
+  if (toggleIcon) toggleIcon.classList.replace('bi-chevron-right', 'bi-chevron-left');
+}
+
+// Evento de clique para alternar e salvar a preferência
+if (toggleBtn) {
+  toggleBtn.addEventListener('click', () => {
+    body.classList.toggle('sidebar-collapsed');
+
+    if (body.classList.contains('sidebar-collapsed')) {
+      localStorage.setItem('sidebarState', 'collapsed');
+      if (toggleIcon) toggleIcon.classList.replace('bi-chevron-left', 'bi-chevron-right');
+    } else {
+      localStorage.setItem('sidebarState', 'expanded');
+      if (toggleIcon) toggleIcon.classList.replace('bi-chevron-right', 'bi-chevron-left');
+    }
+  });
+}
