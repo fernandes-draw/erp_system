@@ -2,7 +2,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic.edit import CreateView, UpdateView
 from django.urls import reverse_lazy
 from .forms import CustomUserCreationForm, UserProfileForm
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
+from .models import CustomUser
 
 
 class SignUpView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -13,7 +14,7 @@ class SignUpView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     # Função que define QUEM  pode acessar essa página
     def test_func(self):
         # Somente Presidente, Diretor e Gerente podem cadastrar novos usuários
-        return self.request.user.cargo in ['presidente', 'diretor', 'gerente']
+        return self.request.user.cargo in ["presidente", "diretor", "gerente"]
 
 
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
@@ -28,3 +29,13 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
 
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = "accounts/dashboard.html"
+
+
+class UserListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = CustomUser
+    template_name = "accounts/user_list.html"
+    context_object_name = "usuarios"
+
+    def test_func(self):
+        # Apenas os cargos de gestão podem ver a lista de funcionários
+        return self.request.user.cargo in ["presidente", "diretor", "gerente"]
