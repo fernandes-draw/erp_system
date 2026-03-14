@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+import datetime
 
 
 class Amostra(models.Model):
@@ -63,7 +64,10 @@ class Projeto(models.Model):
     resultado_metalografia = models.TextField(null=True, blank=True)
     resultado_dureza = models.CharField(max_length=100, null=True, blank=True)
     peso_teorico = models.DecimalField(
-        max_digits=10, decimal_places=3, null=True, blank=True # peso modelo 3D com sobre-metal calculado pelo software CAD
+        max_digits=10,
+        decimal_places=3,
+        null=True,
+        blank=True,  # peso modelo 3D com sobre-metal calculado pelo software CAD
     )
 
     # Estrutura ColdBox
@@ -76,6 +80,25 @@ class Projeto(models.Model):
     responsavel_atual = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True
     )
+
+    def save(self, *args, **kwargs):
+        if not self.codigo_projeto:
+            # Busca o último projeto cadastrado
+            ultimo_projeto = Projeto.objects.order_by("id").last()
+
+            if not ultimo_projeto:
+                # Se for o primeiro projeto do sistema
+                novo_numero = 1
+            else:
+                # Pega o código do último (ex: P-000123) remove o "P-",
+                # convert em int e soma 1
+                ultimo_codigo = ultimo_projeto.codigo_projeto  # string "P-000123"
+                numero_limpo = int(ultimo_codigo.replace("P-", ""))
+                novo_numero = numero_limpo + 1
+
+            # Formata com prefixo e 6 dígitos (zfill preenche com zeros à esquerda)
+            self.codigo_projeto = f"P-{str(novo_numero).zfill(6)}"
+        super(Projeto, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.codigo_projeto
