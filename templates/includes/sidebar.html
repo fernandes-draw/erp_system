@@ -18,7 +18,7 @@
             </div>
             
             <div class="flex-grow-1 ms-3 sidebar-text transition-all">
-                <p class="mb-0 fw-bold lh-base text-truncate">{{ user.username }}</p>
+                <p class="mb-0 fw-bold lh-base text-truncate">{{ user.full_name }}</p>
                 <div class="mt-1">
                     <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
                         {{ user.get_cargo_display }}
@@ -28,7 +28,7 @@
         </div>
         <hr class="mx-3 my-2 opacity-10">
         
-        {% if user.cargo in 'presidente,diretor,gerente' %}
+        {% if user.is_superuser or user.cargo in 'presidente,diretor,gerente' %}
         <div class="nav-item">
             <a href="{% url 'user_list' %}" class="nav-link px-3 py-2">
                 <i class="bi bi-people-fill me-2 text-primary"></i>
@@ -54,11 +54,8 @@
         </a>
 
         <div class="mt-auto border-top pt-2">
-            <small class="text-muted">
-                {{ user.get_cargo_display }}
-            </small>
 
-            {% if user.cargo in 'presidente,diretor,gerente' %}
+            {% if user.is_superuser or user.cargo in 'presidente,diretor,gerente' %}
             <a href="{% url 'signup' %}" class="nav-link text-primary mb-1">
                 <i class="bi bi-person-plus-fill me-2"></i> <span class="sidebar-text">Novo Usuário</span>
             </a>
