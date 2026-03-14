@@ -17,14 +17,24 @@
                 {% endif %}
             </div>
             
-            <div class="flex-grow-1 ms-3 sidebar-text transition-all">
+            <div class="flex-grow-1 ms-3 sidebar-text transition-all text-start">
                 <p class="mb-0 fw-bold lh-base text-truncate">{{ user.username }}</p>
                 <div class="mt-1">
                     <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
-                        {% if user.is_superuser %}Diretor{% elif user.is_staff %}Gerente{% else %}Operador{% endif %}
+                        {{ user.get_cargo_display }}
                     </span>
                 </div>
             </div>
+
+            {% if user.cargo in 'presidente,diretor,gerente' %}
+            <hr class="mx-3 my-2 opacity-10">
+            <div class="nav-item">
+                <a href="{% url 'user_list' %}" class="nav-link px-3 py-2">
+                    <i class="bi bi-people-fill me-2 text-primary"></i>
+                    <span class="sidebar-text">Gestão de Equipe</span>
+                </a>
+            </div>
+            {% endif %}
         </div>
     </div>
 
