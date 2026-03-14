@@ -12,11 +12,11 @@
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <label class="form-label fw-bold">Código da Peça (Cliente)</label>
-                        {{ form.codigo_peça }}
+                        {{ form.codigo_peca }}
                     </div>
                     <div class="col-md-8">
                         <label class="form-label fw-bold">Descrição / Nome da Peça</label>
-                        {{ form.descrição }}
+                        {{ form.descricao }}
                     </div>
                 </div>
 
@@ -37,18 +37,24 @@
 
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <label class="form-label fw-bold">Foto da Amostra</label>
+                        <label class="form-label fw-bold text-light">Foto da Amostra</label>
                         {{ form.foto_amostra }}
                     </div>
-                    <div class="col-md-6 d-flex align-items-end">
-                        <div class="bg-light p-3 rounded border w-100">
-                            <div class="form-check form-check-inline">
+                    
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-light">Análises Requeridas</label>
+                        <div class="d-flex gap-4 p-2 rounded border border-secondary" style="background-color: rgba(255,255,255,0.05); min-height: 38px; align-items: center;">
+                            <div class="form-check mb-0">
                                 {{ form.requer_analise_metalografica }}
-                                <label class="form-check-label">Análise Metalográfica</label>
+                                <label class="form-check-label text-light ms-1" for="{{ form.requer_analise_metalografica.id_for_label }}">
+                                    Metalográfica
+                                </label>
                             </div>
-                            <div class="form-check form-check-inline">
+                            <div class="form-check mb-0">
                                 {{ form.requer_analise_dureza }}
-                                <label class="form-check-label">Análise de Dureza</label>
+                                <label class="form-check-label text-light ms-1" for="{{ form.requer_analise_dureza.id_for_label }}">
+                                    Dureza
+                                </label>
                             </div>
                         </div>
                     </div>
