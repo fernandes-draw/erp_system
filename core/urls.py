@@ -13,6 +13,7 @@ urlpatterns = [
     path(
         "accounts/", include("accounts.urls")
     ),  # Seus customizados: Signup, Profile, Dashboard
+    path("desenvolvimento/", include("desenvolvimento.urls")),
     path(
         "", DashboardView.as_view(), name="dashboard"
     ),  # Define a página inicial como o Dashboard

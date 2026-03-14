@@ -6,8 +6,8 @@ class AmostraForm(forms.ModelForm):
     class Meta:
         model = Amostra
         fields = [
-            "codigo_peça",
-            "descrição",
+            "codigo_peca",
+            "descricao",
             "cliente_nome",
             "peso_amostra",
             "liga_produto",
@@ -16,10 +16,10 @@ class AmostraForm(forms.ModelForm):
             "requer_analise_dureza",
         ]
         widgets = {
-            "codigo_peça": forms.TextInput(
+            "codigo_peca": forms.TextInput(
                 attrs={"class": "form-control", "placeholder": "Ex: 1234567"}
             ),
-            "descrição": forms.TextInput(attrs={"class": "form-control"}),
+            "descricao": forms.TextInput(attrs={"class": "form-control"}),
             "cliente_nome": forms.TextInput(attrs={"class": "form-control"}),
             "peso_amostra": forms.NumberInput(
                 attrs={"class": "form-control", "step": "0.001"}
