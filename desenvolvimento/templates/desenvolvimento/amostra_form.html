@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3">
+            <h4 class="mb-0 fw-bold text-primary"><i class="bi bi-box-seam me-2"></i>Entrada de Nova Amostra</h4>
+        </div>
+        <div class="card-body p-4">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Código da Peça (Cliente)</label>
+                        {{ form.codigo_peça }}
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label fw-bold">Descrição / Nome da Peça</label>
+                        {{ form.descrição }}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Cliente</label>
+                        {{ form.cliente_nome }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Peso Amostra (Kg)</label>
+                        {{ form.peso_amostra }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Liga de Fundição</label>
+                        {{ form.liga_produto }}
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Foto da Amostra</label>
+                        {{ form.foto_amostra }}
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end">
+                        <div class="bg-light p-3 rounded border w-100">
+                            <div class="form-check form-check-inline">
+                                {{ form.requer_analise_metalografica }}
+                                <label class="form-check-label">Análise Metalográfica</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                {{ form.requer_analise_dureza }}
+                                <label class="form-check-label">Análise de Dureza</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="{% url 'amostra_list' %}" class="btn btn-light border">Voltar</a>
+                    <button type="submit" class="btn btn-primary px-5">Cadastrar Amostra</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
