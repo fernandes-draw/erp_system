@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "accounts",
+    "desenvolvimento",
 ]
 
 # Definir o bootstrap 5 como o padrão do Crispy
