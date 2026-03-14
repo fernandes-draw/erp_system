@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import AdminUserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import CustomUser
 from django import forms
 from django.contrib.auth import get_user_model
@@ -6,11 +6,16 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-class CustomUserCreationForm(AdminUserCreationForm):
-
-    class Meta:
+class CustomUserCreationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
         model = CustomUser
-        fields = ("username", "email")
+        # Adiciona os campos que o Diretor/Gerente vai preencher ao criar o funcionário
+        fields = UserCreationForm.Meta.fields + (
+            "first_name",
+            "last_name",
+            "email",
+            "cargo",
+        )
 
 
 class CustomUserChangeForm(UserChangeForm):
