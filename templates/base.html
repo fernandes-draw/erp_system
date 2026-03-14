@@ -69,6 +69,23 @@
             right: 5px !important;
             bottom: 5px !important;
         }
+
+        /* AJUSTE DE CONTRASTE PARA O MODO CLARO (LIGHT MODE) */
+        /* Este seletor afeta o body APENAS quando o tema está em modo 'light' */
+        [data-bs-theme="light"] body {
+            /* Usamos um cinza bem sutil (quase azulado/bege) que contrasta com o branco puro dos cards */
+            background-color: #f4f6f9 !important;
+        }
+        
+        /* Garante que os cards no modo claro sejam branco puro para destacar */
+        [data-bs-theme="light"] .card {
+            background-color: #ffffff;
+        }
+
+        /* Opcional: Garante que a navbar também seja branca ou cinza muito clara para destacar do fundo */
+        [data-bs-theme="light"] .navbar {
+            background-color: #ffffff;
+        }
     </style>
 </head>
 <body class="sidebar-collapsed"> <div id="wrapper">
