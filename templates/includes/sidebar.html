@@ -2,23 +2,28 @@
     <div class="sidebar-user-panel p-3 border-bottom mb-2">
         <div class="d-flex align-items-center position-relative transition-all">
             <div class="flex-shrink-0 position-relative mx-auto">
-                <a href="{% url 'profile_edit' %}" class="edit-profile-icon position-absolute bottom-0 end-0 bg-white text-dark rounded-circle border shadow-sm d-flex align-items-center justify-content-center p-1" style="width: 22px; height: 22px; z-index: 2; text-decoration: none;" title="Editar Perfil">
-                    <i class="bi bi-pencil-fill" style="font-size: 0.75rem"></i>
+                <a href="{% url 'profile_edit' %}" class="edit-profile-icon position-absolute bottom-0 end-0 bg-white text-dark rounded-circle border shadow-sm p-1 ratio ratio-1x1" style="width: 26px; z-index: 2; text-decoration: none;" title="Editar Perfil">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <i class="bi bi-pencil-fill" style="font-size: 0.8rem;"></i>
+                    </div>
                 </a>
 
                 {% if user.avatar %}
                     <img src="{{ user.avatar.url }}" class="rounded-circle border shadow-sm img-user-sidebar transition-all" style="width: 45px; height: 45px; object-fit: cover;">
-                    {% else %}
+                {% else %}
                     <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center img-user-sidebar transition-all" style="width: 45px; height: 45px;">
-                        <i class="bi bi-person-fill fs-4"></i>
+                        <i class="bi bi-person-fill fs-2"></i>
                     </div>
                 {% endif %}
             </div>
+            
             <div class="flex-grow-1 ms-3 sidebar-text transition-all">
-                <p class="mb-0 fw-bold lh-1 text-truncate">{{ user.username }}</p>
-                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
-                    {% if user.is_superuser %}Diretor{% elif user.is_staff %}Gerente{% else %}Operador{% endif %}
-                </span>
+                <p class="mb-0 fw-bold lh-base text-truncate">{{ user.username }}</p>
+                <div class="mt-1">
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                        {% if user.is_superuser %}Diretor{% elif user.is_staff %}Gerente{% else %}Operador{% endif %}
+                    </span>
+                </div>
             </div>
         </div>
     </div>
