@@ -2,9 +2,13 @@
     <div class="sidebar-user-panel p-3 border-bottom mb-2">
         <div class="d-flex align-items-center">
             <div class="flex-shrink-0">
-                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-                    <i class="bi bi-person-fill fs-4"></i>
-                </div>
+                {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" class="rounded-circle border shadow-sm" style="width: 45px; height: 45px; object-fit: cover;">
+                    {% else %}
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                        <i class="bi bi-person-fill fs-4"></i>
+                    </div>
+                {% endif %}
             </div>
             <div class="flex-grow-1 ms-3 sidebar-text">
                 <p class="mb-0 fw-bold lh-1 text-truncate" style="max-width: 140px;">{{ user.username }}</p>
