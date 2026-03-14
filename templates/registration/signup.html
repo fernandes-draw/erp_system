@@ -1,17 +1,64 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags %}
 
 {% block content %}
-  <div class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-6 card p-4 shadow">
-        <h2>Criar Conta</h2>
-        <form method="post">
-          {% csrf_token %}
-          {{ form|crispy}}
-          <button type="submit" class="btn btn-success w-100">Registrar</button>
-        </form>
-      </div>
+<div class="container mt-4">
+    <div class="card shadow-sm border-0 mx-auto" style="max-width: 800px;">
+        <div class="card-header bg-white py-3">
+            <h4 class="mb-0 fw-bold text-primary"><i class="bi bi-person-plus me-2"></i>Cadastrar Colaborador</h4>
+        </div>
+        <div class="card-body p-4">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Primeiro Nome</label>
+                        {{ form.first_name }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Último Nome</label>
+                        {{ form.last_name }}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Nome de Usuário (Login)</label>
+                        {{ form.username }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">E-mail</label>
+                        {{ form.email }}
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Cargo / Nível de Acesso</label>
+                        {{ form.cargo }}
+                    </div>
+                </div>
+                
+                <hr class="my-4">
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Senha</label>
+                        {{ form.password1 }}
+                        <small class="text-muted">Mínimo 8 caracteres.</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Confirmar Senha</label>
+                        {{ form.password2 }}
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <a href="{% url 'user_list' %}" class="btn btn-light border">Cancelar</a>
+                    <button type="submit" class="btn btn-primary px-4">Criar Usuário</button>
+                </div>
+            </form>
+        </div>
     </div>
-  </div>
-{% endblock content %}
+</div>
+{% endblock %}

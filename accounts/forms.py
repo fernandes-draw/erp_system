@@ -15,7 +15,13 @@ class CustomUserCreationForm(UserCreationForm):
             "last_name",
             "email",
             "cargo",
+            "username",
         )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({"class": "form-control"})
 
 
 class CustomUserChangeForm(UserChangeForm):
