@@ -3,21 +3,30 @@
   <div class="container">
     <div class="row">
       <div class="col-12">
-        <h1 class="mt-4">Dashboard</h1>
-        <p class="lead">Bem-vindo ao sistema, <strong>{{ username }} </strong></p>
-        <hr>
+        <h1 class="mt-4 fw-bold">Dashboard</h1>
+        <p class="lead">Bem-vindo ao sistema, <span class="text-primary fw-semibold">{{ user.username }}</span></p>
+        <hr class="opacity-50">
       </div>
     </div>
 
     <div class="row mt-4">
       <div class="col-md-4">
-        <div class="card text-white bg-primary mb-3 shadow">
-          <div class="card-body">
-            <h5 class="card-title">Vendas Hoje</h5>
-            <p class="card-text fs-2">R$ 0,00</p>
+          <div class="card shadow-sm border-start-primary">
+              <div class="card-body p-4">
+                  <h5 class="card-title text-muted small text-uppercase fw-bold">Vendas Hoje</h5>
+                  <p class="card-text fs-2 fw-bold mb-0">R$ 0,00</p>
+              </div>
           </div>
-        </div>
       </div>
-    </div>
+
+      <div class="col-md-4">
+          <div class="card shadow-sm border-start-success">
+              <div class="card-body p-4">
+                  <h5 class="card-title text-muted small text-uppercase fw-bold">Novos Clientes</h5>
+                  <p class="card-text fs-2 fw-bold mb-0">12</p>
+              </div>
+          </div>
+      </div>
+  </div>
   </div>
 {% endblock content %}
