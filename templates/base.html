@@ -64,10 +64,25 @@
 
         /* Ajuste no lápis de edição para acompanhar a foto maior */
         body:not(.sidebar-collapsed) #sidebar .edit-profile-icon {
-            width: 28px !important;
-            height: 28% !important;
-            right: 5px !important;
-            bottom: 5px !important;
+            width: 32px !important; /* Aumentamos um pouco para acompanhar a foto maior */
+            height: 32px !important;
+            min-width: 32px !important;
+            min-height: 32px !important;
+            right: 2px !important;
+            bottom: 10px !important;
+        }
+
+        /* Garante que o ícone de edição seja SEMPRE um círculo, expandido ou não */
+        .edit-profile-icon {
+            width: 26px !important;
+            height: 26px !important;
+            min-width: 26px !important; /* Impede o esmagamento lateral */
+            min-height: 26px !important; /* Impede o esmagamento vertical */
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border-radius: 50% !important;
+            padding: 0 !important; /* Remove paddings que podem ovalar */
         }
 
         /* AJUSTE DE CONTRASTE PARA O MODO CLARO (LIGHT MODE) */
