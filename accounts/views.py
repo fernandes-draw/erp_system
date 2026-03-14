@@ -13,8 +13,8 @@ class SignUpView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     # Função que define QUEM  pode acessar essa página
     def test_func(self):
-        # Somente Presidente, Diretor e Gerente podem cadastrar novos usuários
-        return self.request.user.cargo in ["presidente", "diretor", "gerente"]
+        # Somente Admin, Presidente, Diretor e Gerente podem cadastrar novos usuários
+        return self.request.user.cargo in ["admin", "presidente", "diretor", "gerente"]
 
 
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
@@ -38,4 +38,4 @@ class UserListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def test_func(self):
         # Apenas os cargos de gestão podem ver a lista de funcionários
-        return self.request.user.cargo in ["presidente", "diretor", "gerente"]
+        return self.request.user.cargo in ["admin", "presidente", "diretor", "gerente"]
