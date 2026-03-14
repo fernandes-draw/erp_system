@@ -1,21 +1,44 @@
 from django.views.generic import CreateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from .models import Amostra
+from .models import Amostra, Projeto
 from .forms import AmostraForm
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+
 
 class AmostraCreateView(LoginRequiredMixin, CreateView):
     model = Amostra
     form_class = AmostraForm
-    template_name = 'desenvolvimento/amostra_form.html'
-    success_url = reverse_lazy('amostra_list')
+    template_name = "desenvolvimento/amostra_form.html"
+    success_url = reverse_lazy("amostra_list")
 
     def form_valid(self, form):
         form.instance.cadastrado_por = self.request.user
         return super().form_valid(form)
 
+
 class AmostraListView(LoginRequiredMixin, ListView):
     model = Amostra
-    template_name = 'desenvolvimento/amostra_list.html'
-    context_object_name = 'amostras'
-    ordering = ['-data_recebimento']
+    template_name = "desenvolvimento/amostra_list.html"
+    context_object_name = "amostras"
+    ordering = ["-data_recebimento"]
+
+
+def iniciar_projeto(request, amostra_id):
+    amostra = get_object_or_404(Amostra, id=amostra_id)
+
+    # Verifica se já existe um projeto para essa amostra
+    if hasattr(amostra, "projeto"):
+        messages.warning(request, "Esta amostra já possui um projeto vinculado.")
+    else:
+        # Cria o projeto. O método save() que editamos acima
+        # vai gerar o código P-00000X automaticamente.
+        projeto = Projeto.objects.create(
+            amostra=amostra, responsavel_atual=request.user, status="0_aguardando"
+        )
+        messages.success(
+            request, f"Projeto {projeto.codigo_projeto} iniciado com sucesso!"
+        )
+
+    return redirect("amostra_list")
