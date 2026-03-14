@@ -17,7 +17,7 @@ class SignUpView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return self.request.user.is_staff
 
 
-class ProfileUpdateview(LoginRequiredMixin, UpdateView):
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     form_class = UserProfileForm
     template_name = "registration/profile_update.html"
     success_url = reverse_lazy("dashboard")  # Redireciona para a home apó sucesso
