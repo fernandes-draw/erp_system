@@ -14,13 +14,13 @@ class Amostra(models.Model):
         ("SiMo", "SiMo"),
     ]
 
-    codigo_peça = models.CharField(
+    codigo_peca = models.CharField(
         max_length=50, verbose_name="Código da Peça (Cliente)"
     )
-    descrição = models.CharField(max_length=255)
+    descricao = models.CharField(max_length=255)
     cliente_nome = models.CharField(max_length=100)
     peso_amostra = models.DecimalField(
-        max_length=10, decimal_places=3, null=True, blank=True
+        max_digits=10, decimal_places=3, null=True, blank=True
     )
     liga_produto = models.CharField(max_length=50, choices=LIGAS_CHOICE)
     foto_amostra = models.ImageField(upload_to="amostras/", null=True, blank=True)
@@ -62,11 +62,11 @@ class Projeto(models.Model):
     # Detalhes de Análise
     resultado_metalografia = models.TextField(null=True, blank=True)
     resultado_dureza = models.CharField(max_length=100, null=True, blank=True)
-    peso_real = models.DecimalField(
-        max_length=10, decimal_places=3, null=True, blank=True
+    peso_teorico = models.DecimalField(
+        max_digits=10, decimal_places=3, null=True, blank=True # peso modelo 3D com sobre-metal calculado pelo software CAD
     )
 
-    # Estrutura CldBox
+    # Estrutura ColdBox
     caixa_alta = models.BooleanField(default=False)
     caixa_baixa = models.BooleanField(default=False)
     qtd_caixas_macho = models.PositiveIntegerField(default=0)
