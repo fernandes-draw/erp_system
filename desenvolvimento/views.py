@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 
 from accounts.models import CustomUser
-from .models import Amostra, Projeto
+from .models import Amostra, Projeto, ProjetoObservacao
 from .forms import AmostraForm
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
@@ -158,3 +158,23 @@ def salvar_edicao_projeto(request):
         return JsonResponse({"status": "success", "message": "Atualizado!"})
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)})
+
+
+@require_POST
+def adicionar_observacao(request):
+    projeto_id = request.POST.get("projeto_id")
+    texto = request.POST.get("texto")
+
+    if texto:
+        obs = ProjetoObservacao.objects.create(
+            projeto_id=projeto_id, usuario=request.user, texto=texto
+        )
+        return JsonResponse(
+            {
+                "status": "success",
+                "usuario": obs.usuario.get_full_name() or obs.usuario.username,
+                "data": obs.data_registro.strftime("%d/%m/%y %H:%M"),
+                "texto": obs.texto,
+            }
+        )
+    return JsonResponse({"status": "error", "message": "Texto vazio"})
