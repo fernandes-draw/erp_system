@@ -77,7 +77,7 @@
     </div>
 
     <div class="kanban-scroll-container">
-        <button class="btn-scroll left" onclick="scrollKanban(-340)">
+        <button id="btnScrollLeft" class="btn-scroll left" onclick="scrollKanban(-340)" style="display: none;">
             <i class="bi bi-chevron-left"></i>
         </button>
 
@@ -129,7 +129,7 @@
             {% endfor %}
         </div>
 
-        <button class="btn-scroll right" onclick="scrollKanban(340)">
+        <button id="btnScrollRight" class="btn-scroll right" onclick="scrollKanban(340)">
             <i class="bi bi-chevron-right"></i>
         </button>
     </div>
@@ -144,6 +144,30 @@
             behavior: 'smooth'
         });
     }
+
+    const wrapper = document.getElementById('kanbanWrapper');
+    const btnLeft = document.getElementById('btnScrollLeft');
+    const btnRight = document.getElementById('btnScrollRight');
+
+    function updateScrollButtons() {
+        const scrollLeft = wrapper.scrollLeft;
+        const scrollWidth = wrapper.scrollWidth;
+        const clientWidth = wrapper.clientWidth;
+
+        // Se o scroll for maior que 10px, mostra o botão esquerdo
+        btnLeft.style.display = scrollLeft > 10 ? 'flex' : 'none';
+
+        // Se a soma do que rolou + a largura visível for igual ao total, esconde o direito
+        // Usamos -5 como margem de erro para diferentes navegadores
+        btnRight.style.display = (scrollLeft + clientWidth) >= (scrollWidth - 5) ? 'none' : 'flex';
+    }
+
+    // Monitora o evento de scroll
+    wrapper.addEventListener('scroll', updateScrollButtons);
+
+    // Executa uma vez ao carregar para o caso de telas muito grandes que já mostram tudo
+    window.addEventListener('load', updateScrollButtons);
+    window.addEventListener('resize', updateScrollButtons);
 
     // Inicialização do Drag and Drop
     document.querySelectorAll('.kanban-items').forEach(column => {
