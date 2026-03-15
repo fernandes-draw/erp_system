@@ -217,8 +217,40 @@
     }
 
     function salvarEdicaoProjeto() {
-        // Lógica de salvamento será implementada no próximo passo
-        console.log("Salvando dados...");
+        const form = document.getElementById('formEdicaoProjeto');
+        const formData = new FormData(); // Usamos FormData para suportar envio de arquivos (imagem)
+
+        // Capturando os dados manualmente para garantir
+        formData.append('projeto_id', document.getElementById('projetoIdInput').value);
+        formData.append('peso_teorico', document.getElementById('inputPesoTeorico').value);
+        formData.append('sobremetal', document.getElementById('inputSobremetal').value);
+        formData.append('quantidade_figuras', document.getElementById('inputFiguras').value);
+        formData.append('observacoes', document.getElementById('textObservacoes').value);
+        formData.append('proximo_responsavel', document.getElementById('selectProximoResponsavel').value);
+        
+        const fileInput = document.getElementById('inputImagemCAD');
+        if (fileInput.files.length > 0) {
+            formData.append('imagem_cad', fileInput.files[0]);
+        }
+
+        fetch("{% url 'salvar_edicao_projeto' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Se salvou, fecha o modal e recarrega para ver a nova imagem no card
+                modalBootstrap.hide();
+                location.reload(); 
+            } else {
+                alert("Erro ao salvar: " + data.message);
+            }
+        })
+        .catch(error => console.error('Erro:', error));
     }
 </script>
 
