@@ -1,6 +1,8 @@
 from django.views.generic import CreateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+
+from accounts.models import CustomUser
 from .models import Amostra, Projeto
 from .forms import AmostraForm
 from django.shortcuts import get_object_or_404, redirect
@@ -83,3 +85,32 @@ def atualizar_status_projeto(request):
         )
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)}, status=400)
+
+
+@login_required
+def detalhes_projeto_json(request, projeto_id):
+    projeto = get_object_or_404(Projeto, id=projeto_id)
+    usuarios = [
+        {"id": u.id, "nome": u.get_full_name() or u.username}
+        for u in CustomUser.objects.all()
+    ]
+
+    data = {
+        "id": projeto.id,
+        "codigo": projeto.codigo_projeto,
+        "peca": projeto.amostra.codigo_peca,
+        "cliente": projeto.amostra.cliente_nome,
+        "status_nome": projeto.get_status_display(),
+        "peso_teorico": str(projeto.peso_teorico) if projeto.peso_teorico else "",
+        "sobremetal": str(projeto.sobremetal) if projeto.sobremetal else "",
+        "quantidade_figuras": projeto.quantidade_figuras,
+        "observacoes": projeto.observacoes or "",
+        "resultado_metalografia": projeto.amostra.requer_analise_metalografica,  # Apenas pra saber se requer
+        "usuarios": usuarios,
+        "responsavel_proxima_id": (
+            projeto.responsavel_proxima_fase.id
+            if projeto.responsavel_proxima_fase
+            else None
+        ),
+    }
+    return JsonResponse(data)
