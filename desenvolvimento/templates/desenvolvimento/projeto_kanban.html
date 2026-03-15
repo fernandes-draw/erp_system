@@ -241,7 +241,7 @@
                 item.style.backgroundColor = 'rgba(255,255,255,0.05)';
                 item.innerHTML = `
                     <div class="d-flex justify-content-between small">
-                        <strong style="color: ${obs.cor}">${obs.usuario}</strong>
+                        <strong style="color: ${obs.cor}">${obs.usuario}</strong> 
                         <span class="text-muted" style="font-size: 0.7rem;">${obs.data}</span>
                     </div>
                     <div class="small text-light mt-1">${obs.texto}</div>
@@ -254,7 +254,7 @@
         selectUser.innerHTML = '<option value="">Selecione...</option>';
         data.usuarios.forEach(user => {
             let option = new Option(user.nome, user.id);
-            if(user.id === data.responsavel_proxima_id) option.selected = true;
+            if(user.id === data.responsavel_atual_id) option.selected = true;
             selectUser.add(option);
         });
 
@@ -329,9 +329,11 @@
                 const item = document.createElement('div');
                 item.className = 'mb-2 p-2 rounded border-bottom border-secondary animate__animated animate__fadeIn';
                 item.style.backgroundColor = 'rgba(255,255,255,0.05)';
+                
+                // AQUI: Usamos data.usuario e data.texto porque vem direto da resposta do fetch
                 item.innerHTML = `
                     <div class="d-flex justify-content-between small">
-                        <strong style="color: #17a2b8">${data.usuario}</strong>
+                        <strong style="color: ${data.cor}">${data.usuario}</strong>
                         <span class="text-muted" style="font-size: 0.7rem;">${data.data}</span>
                     </div>
                     <div class="small text-light mt-1">${data.texto}</div>

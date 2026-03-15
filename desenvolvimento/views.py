@@ -109,10 +109,8 @@ def detalhes_projeto_json(request, projeto_id):
             "quantidade_figuras": projeto.quantidade_figuras,
             "observacoes": projeto.observacoes or "",
             "usuarios": usuarios,
-            "responsavel_proxima_id": (
-                projeto.responsavel_proxima_fase.id
-                if projeto.responsavel_proxima_fase
-                else None
+            "responsavel_atual_id": (
+                projeto.responsavel_atual.id if projeto.responsavel_atual else None
             ),
             "imagem_url": projeto.imagem_cad.url if projeto.imagem_cad else None,
         }
@@ -167,7 +165,7 @@ def detalhes_projeto_json(request, projeto_id):
             "usuario": obs.usuario.get_full_name() or obs.usuario.username,
             "texto": obs.texto,
             "data": obs.data_registro.strftime("%d/%m/%y %H:%M"),
-            "cor": getattr(obs.usuario, "cor_identificadora", "#ccc"),
+            "cor": getattr(obs.usuario, "cor_identificadora", "#17a2b8"),
         }
         for obs in projeto.historico_observacoes.all()
     ]
@@ -220,6 +218,7 @@ def adicionar_observacao(request):
                 "usuario": obs.usuario.get_full_name() or obs.usuario.username,
                 "data": obs.data_registro.strftime("%d/%m/%y %H:%M"),
                 "texto": obs.texto,
+                'cor': getattr(obs.usuario, 'cor_identificadora', '#17a2b8') # PEGA A COR REAL DO USUÁRIO
             }
         )
     return JsonResponse({"status": "error", "message": "Texto vazio"})
