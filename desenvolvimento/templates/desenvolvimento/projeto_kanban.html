@@ -319,9 +319,18 @@
                             <select class="form-select bg-dark text-white border-info" id="selectProximoResponsavel"></select>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label small">Observações</label>
-                        <textarea class="form-control bg-dark text-white border-secondary" id="textObservacoes" rows="2"></textarea>
+                    <div class="mb-3 border-top border-secondary pt-3">
+                        <label class="form-label small fw-bold text-info">Histórico de Observações</label>
+                        
+                        <div id="listaObservacoes" class="mb-3 p-2 rounded" style="background: rgba(0,0,0,0.2); max-height: 200px; overflow-y: auto;">
+                            </div>
+
+                        <div class="input-group">
+                            <input type="text" id="novaObsTexto" class="form-control bg-dark text-white border-secondary" placeholder="Digite uma observação...">
+                            <button class="btn btn-info" type="button" onclick="registrarObservacao()">
+                                <i class="bi bi-chat-left-text me-1"></i> Registrar
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
