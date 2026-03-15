@@ -5,6 +5,10 @@ from .models import Amostra, Projeto
 from .forms import AmostraForm
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+import json
 
 
 class AmostraCreateView(LoginRequiredMixin, CreateView):
@@ -55,3 +59,19 @@ def iniciar_projeto(request, amostra_id):
         )
 
     return redirect("amostra_list")
+
+
+@login_required
+@require_POST
+def atualizar_status_projeto(request):
+    data = json.loads(request.body)
+    projeto_id = data.get("projeto_id")
+    novo_status = data.get("novo_status")
+
+    projeto = get_object_or_404(Projeto, id=projeto_id)
+
+    # Aqui você poderia adicionar: if request.user.cargo == "desenvolvimento"...
+    projeto.status = novo_status
+    projeto.save()
+
+    return JsonResponse({"status": "success"})
