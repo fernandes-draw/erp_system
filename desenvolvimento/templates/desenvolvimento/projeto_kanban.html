@@ -102,20 +102,29 @@
     function abrirEdicaoProjeto(id) {
         // Primeiro, buscamos os dados atuais do projeto no servidor
         fetch(`/desenvolvimento/projeto/detalhes/${id}/`)
-        .then(response => response.json())
-        .then(data => {
-            // Preenchemos os campos do modal com os dados que vieram do Django
-            document.getElementById('projetoIdInput').value = id;
-            document.getElementById('spanCodigoProjeto').innerText = data.codigo;
-            document.getElementById('pDescricaoAmostra').innerText = `${data.peca} - ${data.cliente}`;
-            document.getElementById('pStatusAtual').innerText = data.status_nome;
-            document.getElementById('inputPesoTeorico').value = data.peso_teorico || '';
-            document.getElementById('textObservacoes').value = data.observacoes || '';
-            document.getElementById('inputMetalografia').value = data.resultado_metalografia || '';
-            document.getElementById('inputDureza').value = data.resultado_dureza || '';
+            .then(response => response.json())
+            .then(data => {
+                // Preenchemos os campos do modal com os dados que vieram do Django
+                document.getElementById('projetoIdInput').value = id;
+                document.getElementById('spanCodigoProjeto').innerText = data.codigo;
+                document.getElementById('pDescricaoAmostra').innerText = `${data.peca} - ${data.cliente}`;
+                document.getElementById('pStatusAtual').innerText = data.status_nome;
+                document.getElementById('inputPesoTeorico').value = data.peso_teorico || '';
+                document.getElementById('textObservacoes').value = data.observacoes || '';
+                document.getElementById('inputMetalografia').value = data.resultado_metalografia || '';
+                document.getElementById('inputDureza').value = data.resultado_dureza || '';
 
-            // Abre a janela
-            modalBootstrap.show();
+                // Abre a janela
+                modalBootstrap.show();
+
+                const selectUser = document.getElementById('selectProximoResponsavel');
+                selectUser.innerHTML = '<option value="">Selecione...</option>';
+
+                data.usuarios.forEach(user => {
+                    let option = new Option(user.nome, user.id);
+                    if(user.id === data.responsavel_proxima_id) option.selected = true;
+                    selectUser.add(option);
+                });
         });
     }
 </script>
