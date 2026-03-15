@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AmostraCreateView, AmostraListView, ProjetoKanbanView, iniciar_projeto
+from .views import AmostraCreateView, AmostraListView, ProjetoKanbanView, atualizar_status_projeto, iniciar_projeto
 
 urlpatterns = [
     path('amostras/', AmostraListView.as_view(), name='amostra_list'),
