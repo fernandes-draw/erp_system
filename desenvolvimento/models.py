@@ -69,6 +69,12 @@ class Projeto(models.Model):
         null=True,
         blank=True,  # peso modelo 3D com sobre-metal calculado pelo software CAD
     )
+    sobremetal = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, verbose_name="Sobremetal (mm)")
+    quantidade_figuras = models.PositiveIntegerField(default=1, verbose_name="Figuras no Molde")
+    observacoes = models.TextField(blank=True, null=True)
+    
+    # Imagem do CAD
+    imagem_cad = models.ImageField(upload_to='projetos/cad/', null=True, blank=True)
 
     # Estrutura ColdBox
     caixa_alta = models.BooleanField(default=False)
@@ -79,6 +85,14 @@ class Projeto(models.Model):
     ultima_atualização = models.DateTimeField(auto_now_add=True)
     responsavel_atual = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True
+    )
+    # Campo para definir quem assume a próxima etapa
+    responsavel_proxima_fase = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='projetos_a_assumir'
     )
 
     def save(self, *args, **kwargs):
