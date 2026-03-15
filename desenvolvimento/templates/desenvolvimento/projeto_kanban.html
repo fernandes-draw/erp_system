@@ -68,10 +68,14 @@
                 .then(data => {
                     if (data.status === 'success') {
                         // Atualiza a cor da borda e o nome do responsável no card sem dar refresh
-                        card.style.borderLeft = `6px solid ${data.nova_cor}`;
-                        card.querySelector('.user-color-dot').style.backgroundColor = data.nova_cor;
-                        card.querySelector('.user-name').style.color = data.nova_cor;
-                        card.querySelector('.user-name').innerText = data.nome_usuario;
+                        // Usamos !important para garantir que o estilo inline vença qualquer classe CSS
+                        card.style.setProperty('border-left', `6px solid ${data.nova_cor}`, 'important');
+
+                        if(dot) dot.style.backgroundColor = data.nova_cor;
+                        if(nameLabel) {
+                            nameLabel.style.color = data.nova_cor;
+                            nameLabel.innerText = data.nome_usuario;
+                        }
                     } else {
                         alert("Erro ao salvar: " + data.message);
                         location.reload();
