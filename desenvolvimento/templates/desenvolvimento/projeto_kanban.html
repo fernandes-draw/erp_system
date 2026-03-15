@@ -47,6 +47,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
+    {% comment %} ============== Script Manipular Kanban ================== {% endcomment %}
     document.querySelectorAll('.kanban-items').forEach(column => {
         new Sortable(column, {
             group: 'kanban',
@@ -89,8 +90,37 @@
         console.log("Abrindo edição do projeto:", id);
         // O Modal entra aqui no próximo passo
     }
+
+    {% comment %} ============== Script Modal Editar Projeto ================== {% endcomment %}
+    // Variável global para controlar o modal do Bootstrap
+    let modalBootstrap;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        modalBootstrap = new bootstrap.Modal(document.getElementById('modalEdicao'));
+    });
+
+    function abrirEdicaoProjeto(id) {
+        // Primeiro, buscamos os dados atuais do projeto no servidor
+        fetch(`/desenvolvimento/projeto/detalhes/${id}/`)
+        .then(response => response.json())
+        .then(data => {
+            // Preenchemos os campos do modal com os dados que vieram do Django
+            document.getElementById('projetoIdInput').value = id;
+            document.getElementById('spanCodigoProjeto').innerText = data.codigo;
+            document.getElementById('pDescricaoAmostra').innerText = `${data.peca} - ${data.cliente}`;
+            document.getElementById('pStatusAtual').innerText = data.status_nome;
+            document.getElementById('inputPesoTeorico').value = data.peso_teorico || '';
+            document.getElementById('textObservacoes').value = data.observacoes || '';
+            document.getElementById('inputMetalografia').value = data.resultado_metalografia || '';
+            document.getElementById('inputDureza').value = data.resultado_dureza || '';
+
+            // Abre a janela
+            modalBootstrap.show();
+        });
+    }
 </script>
 
+{% comment %} ============== Modal Editar Projeto ================== {% endcomment %}
 <div class="modal fade" id="modalEdicao" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content bg-dark text-light border-secondary">
