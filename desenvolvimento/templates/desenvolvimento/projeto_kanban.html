@@ -4,15 +4,11 @@
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold text-light"><i class="bi bi-kanban me-2"></i>Fluxo de Desenvolvimento</h2>
-        <span class="badge bg-primary">Modo Gerencial</span>
     </div>
 
     <div class="d-flex pb-3 gap-3 overflow-auto" style="min-height: 80vh;">
-        
         {% for fase_valor, fase_nome in fases %}
-        <div class="kanban-column bg-dark-subtle rounded border border-secondary-subtle p-2" 
-             style="min-width: 300px; width: 300px; background-color: rgba(255,255,255,0.03);">
-            
+        <div class="kanban-column rounded p-2" style="min-width: 300px; width: 300px; background-color: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);">
             <div class="column-header p-2 mb-3 border-bottom border-primary">
                 <h6 class="fw-bold mb-0 text-uppercase small text-primary">{{ fase_nome }}</h6>
             </div>
@@ -20,22 +16,22 @@
             <div class="kanban-items d-flex flex-column gap-2" id="{{ fase_valor }}" style="min-height: 200px;">
                 {% for projeto in projetos %}
                     {% if projeto.status == fase_valor %}
-                    <div class="card bg-dark border-secondary shadow-sm" 
-                        data-id="{{ projeto.id }}" 
-                        ondblclick="abrirEdicaoProjeto({{ projeto.id }})"
-                        style="border-left: 5px solid {{ projeto.responsavel_atual.cor_identificadora }} !important; cursor: grab;">
+                    <div class="card bg-dark border-secondary shadow-sm card-projeto" 
+                         data-id="{{ projeto.id }}" 
+                         ondblclick="abrirEdicaoProjeto({{ projeto.id }})"
+                         style="border-left: 6px solid {{ projeto.responsavel_atual.cor_identificadora }} !important; cursor: grab;">
                         
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between mb-2">
                                 <span class="badge bg-info text-dark">{{ projeto.codigo_projeto }}</span>
                                 <small class="text-muted">{{ projeto.amostra.data_recebimento|date:"d/m" }}</small>
                             </div>
-                            
                             <h6 class="card-title text-light mb-1">{{ projeto.amostra.codigo_peca }}</h6>
+                            <p class="small text-secondary mb-2">{{ projeto.amostra.cliente_nome }}</p>
                             
-                            <div class="mt-3 pt-2 border-top border-secondary d-flex align-items-center">
-                                <div style="width: 10px; height: 10px; background-color: {{ projeto.responsavel_atual.cor_identificadora }}; border-radius: 50%;" class="me-2"></div>
-                                <small class="fw-bold" style="color: {{ projeto.responsavel_atual.cor_identificadora }};">
+                            <div class="mt-3 pt-2 border-top border-secondary d-flex align-items-center user-info">
+                                <div class="user-color-dot" style="width: 10px; height: 10px; background-color: {{ projeto.responsavel_atual.cor_identificadora }}; border-radius: 50%;" class="me-2"></div>
+                                <small class="fw-bold ms-2 user-name" style="color: {{ projeto.responsavel_atual.cor_identificadora }}">
                                     {{ projeto.responsavel_atual.get_full_name|default:projeto.responsavel_atual.username }}
                                 </small>
                             </div>
@@ -46,7 +42,6 @@
             </div>
         </div>
         {% endfor %}
-
     </div>
 </div>
 
@@ -56,37 +51,39 @@
         new Sortable(column, {
             group: 'kanban',
             animation: 150,
-            ghostClass: 'bg-primary-subtle',
             onEnd: function (evt) {
                 const projetoId = evt.item.getAttribute('data-id');
                 const novoStatus = evt.to.id;
-                
+                const card = evt.item;
+
                 fetch("{% url 'atualizar_status_projeto' %}", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "X-CSRFToken": "{{ csrf_token }}" // Importante para segurança do Django
+                        "X-CSRFToken": "{{ csrf_token }}"
                     },
-                    body: JSON.stringify({
-                        projeto_id: projetoId,
-                        novo_status: novoStatus
-                    })
+                    body: JSON.stringify({ projeto_id: projetoId, novo_status: novoStatus })
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.status !== 'success') {
-                        alert("Erro ao atualizar status!");
-                        location.reload(); // Recarrega se falhar
+                    if (data.status === 'success') {
+                        // Atualiza a cor da borda e o nome do responsável no card sem dar refresh
+                        card.style.borderLeft = `6px solid ${data.nova_cor}`;
+                        card.querySelector('.user-color-dot').style.backgroundColor = data.nova_cor;
+                        card.querySelector('.user-name').style.color = data.nova_cor;
+                        card.querySelector('.user-name').innerText = data.nome_usuario;
+                    } else {
+                        alert("Erro ao salvar: " + data.message);
+                        location.reload();
                     }
                 });
             }
         });
     });
-</script>
 
-<style>
-    .kanban-items::-webkit-scrollbar { width: 5px; }
-    .kanban-items::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-    .card:active { cursor: grabbing !important; }
-</style>
+    function abrirEdicaoProjeto(id) {
+        console.log("Abrindo edição do projeto:", id);
+        // O Modal entra aqui no próximo passo
+    }
+</script>
 {% endblock %}
