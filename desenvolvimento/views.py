@@ -95,6 +95,7 @@ def detalhes_projeto_json(request, projeto_id):
         for u in CustomUser.objects.all()
     ]
 
+    # 1. Primeiro definimos o dicionário 'data' com os dados do PROJETO
     data = {
         "id": projeto.id,
         "codigo": projeto.codigo_projeto,
@@ -105,7 +106,7 @@ def detalhes_projeto_json(request, projeto_id):
         "sobremetal": str(projeto.sobremetal) if projeto.sobremetal else "",
         "quantidade_figuras": projeto.quantidade_figuras,
         "observacoes": projeto.observacoes or "",
-        "resultado_metalografia": projeto.amostra.requer_analise_metalografica,  # Apenas pra saber se requer
+        "resultado_metalografia": projeto.amostra.requer_analise_metalografica,
         "usuarios": usuarios,
         "responsavel_proxima_id": (
             projeto.responsavel_proxima_fase.id
@@ -114,6 +115,18 @@ def detalhes_projeto_json(request, projeto_id):
         ),
         "imagem_url": projeto.imagem_exibicao if projeto.imagem_exibicao else None,
     }
+
+    # 2. Depois adicionamos a LISTA de observações ao dicionário
+    data["observacoes_historico"] = [
+        {
+            "usuario": obs.usuario.get_full_name() or obs.usuario.username,
+            "texto": obs.texto,
+            "data": obs.data_registro.strftime("%d/%m/%y %H:%M"),
+            "cor": getattr(obs.usuario, "cor_identificadora", "#ccc"),
+        }
+        for obs in projeto.historico_observacoes.all()
+    ]
+
     return JsonResponse(data)
 
 
