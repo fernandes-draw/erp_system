@@ -59,8 +59,24 @@
                 const projetoId = evt.item.getAttribute('data-id');
                 const novoStatus = evt.to.id;
                 
-                // Aqui faremos a chamada para o Django salvar a mudança no futuro
-                console.log(`Projeto ${projetoId} movido para ${novoStatus}`);
+                fetch("{% url 'atualizar_status_projeto' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}" // Importante para segurança do Django
+                    },
+                    body: JSON.stringify({
+                        projeto_id: projetoId,
+                        novo_status: novoStatus
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status !== 'success') {
+                        alert("Erro ao atualizar status!");
+                        location.reload(); // Recarrega se falhar
+                    }
+                });
             }
         });
     });
