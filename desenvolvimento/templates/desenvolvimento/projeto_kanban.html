@@ -190,14 +190,11 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
-                        card.style.setProperty('border-left', `6px solid ${data.nova_cor}`, 'important');
-                        const dot = card.querySelector('.user-color-dot');
-                        const nameLabel = card.querySelector('.user-name');
-                        if(dot) dot.style.backgroundColor = data.nova_cor;
-                        if(nameLabel) {
-                            nameLabel.style.color = data.nova_cor;
-                            nameLabel.innerText = data.nome_usuario;
-                        }
+                        // ... (mantenha a lógica de atualização de cores e nomes que já funciona) ...
+
+                        // NOVIDADE: Abre o modal automaticamente ao soltar na nova coluna
+                        abrirEdicaoProjeto(projetoId);
+                        
                     } else {
                         alert("Erro ao salvar: " + data.message);
                         location.reload();
