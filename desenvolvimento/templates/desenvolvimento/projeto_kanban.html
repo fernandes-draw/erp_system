@@ -30,7 +30,7 @@
                             <p class="small text-secondary mb-2">{{ projeto.amostra.cliente_nome }}</p>
                             
                             <div class="mt-3 pt-2 border-top border-secondary d-flex align-items-center user-info">
-                                <div class="user-color-dot" style="width: 10px; height: 10px; background-color: {{ projeto.responsavel_atual.cor_identificadora }}; border-radius: 50%;" class="me-2"></div>
+                                <div class="user-color-dot" style="width: 10px; height: 10px; background-color: {{ projeto.responsavel_atual.cor_identificadora }}; border-radius: 50%;"></div>
                                 <small class="fw-bold ms-2 user-name" style="color: {{ projeto.responsavel_atual.cor_identificadora }}">
                                     {{ projeto.responsavel_atual.get_full_name|default:projeto.responsavel_atual.username }}
                                 </small>
@@ -47,7 +47,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
-    {% comment %} ============== Script Manipular Kanban ================== {% endcomment %}
+    // ============== Script Manipular Kanban ==================
     document.querySelectorAll('.kanban-items').forEach(column => {
         new Sortable(column, {
             group: 'kanban',
@@ -68,9 +68,11 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
-                        // Atualiza a cor da borda e o nome do responsável no card sem dar refresh
-                        // Usamos !important para garantir que o estilo inline vença qualquer classe CSS
                         card.style.setProperty('border-left', `6px solid ${data.nova_cor}`, 'important');
+
+                        // CORREÇÃO: Precisamos selecionar os elementos DENTRO do card que foi movido
+                        const dot = card.querySelector('.user-color-dot');
+                        const nameLabel = card.querySelector('.user-name');
 
                         if(dot) dot.style.backgroundColor = data.nova_cor;
                         if(nameLabel) {
@@ -86,49 +88,66 @@
         });
     });
 
-    function abrirEdicaoProjeto(id) {
-        console.log("Abrindo edição do projeto:", id);
-        // O Modal entra aqui no próximo passo
-    }
-
-    {% comment %} ============== Script Modal Editar Projeto ================== {% endcomment %}
-    // Variável global para controlar o modal do Bootstrap
+    // ============== Script Modal Editar Projeto ==================
     let modalBootstrap;
 
     document.addEventListener('DOMContentLoaded', function() {
-        modalBootstrap = new bootstrap.Modal(document.getElementById('modalEdicao'));
+        // Inicializa o modal globalmente
+        const modalElement = document.getElementById('modalEdicao');
+        if (modalElement) {
+            modalBootstrap = new bootstrap.Modal(modalElement);
+        }
     });
 
     function abrirEdicaoProjeto(id) {
-        // Mudamos a forma de chamar a URL para ser dinâmica
         const urlDetalhes = "{% url 'detalhes_projeto_json' 0 %}".replace('0', id);
 
-        // Primeiro, buscamos os dados atuais do projeto no servidor
         fetch(urlDetalhes)
-            .then(response => response.json())
-            .then(data => {
-                // Preenchemos os campos do modal com os dados que vieram do Django
+        .then(response => response.json())
+        .then(data => {
+            if(document.getElementById('projetoIdInput')) 
                 document.getElementById('projetoIdInput').value = id;
-                document.getElementById('spanCodigoProjeto').innerText = data.codigo;
-                document.getElementById('pDescricaoAmostra').innerText = `${data.peca} - ${data.cliente}`;
-                document.getElementById('pStatusAtual').innerText = data.status_nome;
+
+            const spanCodigo = document.getElementById('spanCodigoProjeto');
+            if(spanCodigo) spanCodigo.innerText = data.codigo;
+
+            const pDesc = document.getElementById('pDescricaoAmostra');
+            if(pDesc) pDesc.innerText = `${data.peca} - ${data.cliente}`;
+
+            const pStatus = document.getElementById('pStatusAtual');
+            if(pStatus) pStatus.innerText = data.status_nome;
+
+            if(document.getElementById('inputPesoTeorico')) 
                 document.getElementById('inputPesoTeorico').value = data.peso_teorico || '';
+            
+            // CORREÇÃO: Faltavam estes campos que você adicionou no Modal mas não estavam no JS
+            if(document.getElementById('inputSobremetal')) 
+                document.getElementById('inputSobremetal').value = data.sobremetal || '';
+            
+            if(document.getElementById('inputFiguras')) 
+                document.getElementById('inputFiguras').value = data.quantidade_figuras || '1';
+
+            if(document.getElementById('textObservacoes')) 
                 document.getElementById('textObservacoes').value = data.observacoes || '';
-                document.getElementById('inputMetalografia').value = data.resultado_metalografia || '';
-                document.getElementById('inputDureza').value = data.resultado_dureza || '';
 
-                // Abre a janela
-                modalBootstrap.show();
-
-                const selectUser = document.getElementById('selectProximoResponsavel');
+            const selectUser = document.getElementById('selectProximoResponsavel');
+            if(selectUser) {
                 selectUser.innerHTML = '<option value="">Selecione...</option>';
-
                 data.usuarios.forEach(user => {
                     let option = new Option(user.nome, user.id);
                     if(user.id === data.responsavel_proxima_id) option.selected = true;
                     selectUser.add(option);
                 });
-        });
+            }
+
+            if(modalBootstrap) modalBootstrap.show();
+        })
+        .catch(error => console.error('Erro ao buscar detalhes:', error));
+    }
+
+    // Função que será criada no próximo passo
+    function salvarEdicaoProjeto() {
+        console.log("Salvando dados...");
     }
 </script>
 
@@ -143,6 +162,18 @@
             <div class="modal-body">
                 <form id="formEdicaoProjeto" enctype="multipart/form-data">
                     <input type="hidden" id="projetoIdInput">
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label class="small text-secondary">Peça / Cliente</label>
+                            <p id="pDescricaoAmostra" class="fw-bold mb-0"></p> 
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <label class="small text-secondary">Status</label>
+                            <p id="pStatusAtual" class="badge bg-primary d-block"></p> 
+                        </div>
+                    </div>
+                    <hr class="border-secondary opacity-20">
                     
                     <div class="row g-3 mb-3">
                         <div class="col-md-4">
@@ -167,7 +198,7 @@
                         <div class="col-md-6">
                             <label class="form-label small text-info">Próximo Responsável</label>
                             <select class="form-select bg-dark text-white border-info" id="selectProximoResponsavel">
-                                </select>
+                            </select>
                         </div>
                     </div>
 
