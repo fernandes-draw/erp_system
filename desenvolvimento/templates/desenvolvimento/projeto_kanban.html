@@ -213,9 +213,11 @@
 
     function abrirEdicaoProjeto(id) {
         const urlDetalhes = "{% url 'detalhes_projeto_json' 0 %}".replace('0', id);
+
         fetch(urlDetalhes)
         .then(response => response.json())
         .then(data => {
+            // Preenchimento dos campos básicos
             document.getElementById('projetoIdInput').value = id;
             document.getElementById('spanCodigoProjeto').innerText = data.codigo;
             document.getElementById('pDescricaoAmostra').innerText = `${data.peca} - ${data.cliente}`;
@@ -225,6 +227,26 @@
             document.getElementById('inputFiguras').value = data.quantidade_figuras || '1';
             document.getElementById('textObservacoes').value = data.observacoes || '';
 
+            // Renderizar o Histórico de Observações
+            const listaObs = document.getElementById('listaObservacoes');
+            if (listaObs) {
+                listaObs.innerHTML = ''; // Limpa o que tinha antes
+                data.observacoes_historico.forEach(obs => {
+                    const item = document.createElement('div');
+                    item.className = 'mb-2 p-2 rounded border-bottom border-secondary';
+                    item.style.backgroundColor = 'rgba(255,255,255,0.05)';
+                    item.innerHTML = `
+                        <div class="d-flex justify-content-between small">
+                            <strong style="color: ${obs.cor}">${obs.usuario}</strong>
+                            <span class="text-muted" style="font-size: 0.7rem;">${obs.data}</span>
+                        </div>
+                        <div class="small text-light mt-1">${obs.texto}</div>
+                    `;
+                    listaObs.appendChild(item);
+                });
+            }
+
+            // Responsável Próxima Etapa
             const selectUser = document.getElementById('selectProximoResponsavel');
             selectUser.innerHTML = '<option value="">Selecione...</option>';
             data.usuarios.forEach(user => {
@@ -234,7 +256,8 @@
             });
 
             if(modalBootstrap) modalBootstrap.show();
-        });
+        })
+        .catch(error => console.error('Erro ao abrir projeto:', error));
     }
 
     function salvarEdicaoProjeto() {
