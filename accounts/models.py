@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from colorfield.fields import ColorField
 
 
 class CustomUser(AbstractUser):
@@ -21,6 +22,7 @@ class CustomUser(AbstractUser):
 
     # Campo opcional para "Role/Cargo" que comentamos
     cargo = models.CharField(max_length=20, choices=CARGO_CHOICES, default="operador")
+    cor_identificadora = ColorField(default="#6c757d", help_text="Cor do Kanban")
 
     def save(self, *args, **kwargs):
         # Lógica automática: Se for Diretor ou Gerente, ganha status de equipe (is_staff)
