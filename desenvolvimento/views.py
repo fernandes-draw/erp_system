@@ -76,7 +76,8 @@ def atualizar_status_projeto(request):
         return JsonResponse(
             {
                 "status": "success",
-                "nova_cor": request.user.cor_identificadora,
+                # Forçamos a conversão para string para garantir o #hexadecimal
+                "nova_cor": str(request.user.cor_identificadora),
                 "nome_usuario": request.user.get_full_name() or request.user.username,
             }
         )
