@@ -3,6 +3,7 @@ from .views import (
     AmostraCreateView,
     AmostraListView,
     ProjetoKanbanView,
+    adicionar_observacao,
     atualizar_status_projeto,
     detalhes_projeto_json,
     iniciar_projeto,
@@ -25,4 +26,5 @@ urlpatterns = [
         name="detalhes_projeto_json",
     ),
     path("projeto/salvar-edicao/", salvar_edicao_projeto, name="salvar_edicao_projeto"),
+    path('projeto/adicionar-observacao/', adicionar_observacao, name='adicionar_observacao'),
 ]

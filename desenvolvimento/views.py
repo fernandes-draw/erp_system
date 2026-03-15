@@ -89,6 +89,51 @@ def atualizar_status_projeto(request):
 
 @login_required
 def detalhes_projeto_json(request, projeto_id):
+    # O get_object_or_404 previne erros se o ID não existir
+    projeto = get_object_or_404(Projeto, id=projeto_id)
+
+    try:
+        usuarios = [
+            {"id": u.id, "nome": u.get_full_name() or u.username}
+            for u in CustomUser.objects.all()
+        ]
+
+        data = {
+            "id": projeto.id,
+            "codigo": projeto.codigo_projeto,
+            "peca": projeto.amostra.codigo_peca,
+            "cliente": projeto.amostra.cliente_nome,
+            "status_nome": projeto.get_status_display(),
+            "peso_teorico": str(projeto.peso_teorico) if projeto.peso_teorico else "",
+            "sobremetal": str(projeto.sobremetal) if projeto.sobremetal else "",
+            "quantidade_figuras": projeto.quantidade_figuras,
+            "observacoes": projeto.observacoes or "",
+            "usuarios": usuarios,
+            "responsavel_proxima_id": (
+                projeto.responsavel_proxima_fase.id
+                if projeto.responsavel_proxima_fase
+                else None
+            ),
+            "imagem_url": projeto.imagem_cad.url if projeto.imagem_cad else None,
+        }
+
+        # AQUI PODE ESTAR O ERRO: Verifique se historico_observacoes existe
+        data["observacoes_historico"] = [
+            {
+                "usuario": obs.usuario.get_full_name() or obs.usuario.username,
+                "texto": obs.texto,
+                "data": obs.data_registro.strftime("%d/%m/%y %H:%M"),
+                "cor": getattr(obs.usuario, "cor_identificadora", "#ccc"),
+            }
+            for obs in projeto.historico_observacoes.all()
+        ]
+
+        return JsonResponse(data)
+
+    except Exception as e:
+        # Se der erro, isso vai imprimir no console do VS Code para você ler
+        print(f"ERRO NA VIEW: {e}")
+        return JsonResponse({"error": str(e)}, status=500)
     projeto = get_object_or_404(Projeto, id=projeto_id)
     usuarios = [
         {"id": u.id, "nome": u.get_full_name() or u.username}
