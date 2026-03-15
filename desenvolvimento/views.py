@@ -64,14 +64,21 @@ def iniciar_projeto(request, amostra_id):
 @login_required
 @require_POST
 def atualizar_status_projeto(request):
-    data = json.loads(request.body)
-    projeto_id = data.get("projeto_id")
-    novo_status = data.get("novo_status")
+    try:
+        data = json.loads(request.body)
+        projeto = get_object_or_404(Projeto, id=data.get("projeto_id"))
 
-    projeto = get_object_or_404(Projeto, id=projeto_id)
+        # Atualiza o status e define quem moveu como o responsável atual
+        projeto.status = data.get("novo_status")
+        projeto.responsavel_atual = request.user
+        projeto.save()
 
-    # Aqui você poderia adicionar: if request.user.cargo == "desenvolvimento"...
-    projeto.status = novo_status
-    projeto.save()
-
-    return JsonResponse({"status": "success"})
+        return JsonResponse(
+            {
+                "status": "success",
+                "nova_cor": request.user.cor_identificadora,
+                "nome_usuario": request.user.get_full_name() or request.user.username,
+            }
+        )
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=400)
