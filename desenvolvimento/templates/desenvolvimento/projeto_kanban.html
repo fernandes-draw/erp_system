@@ -267,17 +267,16 @@
 }
 
     function salvarEdicaoProjeto() {
-        const form = document.getElementById('formEdicaoProjeto');
-        const formData = new FormData(); // Usamos FormData para suportar envio de arquivos (imagem)
+        const formData = new FormData();
 
-        // Capturando os dados manualmente para garantir
+        // Capturando apenas os dados técnicos e o responsável
         formData.append('projeto_id', document.getElementById('projetoIdInput').value);
         formData.append('peso_teorico', document.getElementById('inputPesoTeorico').value);
         formData.append('sobremetal', document.getElementById('inputSobremetal').value);
         formData.append('quantidade_figuras', document.getElementById('inputFiguras').value);
-        formData.append('observacoes', document.getElementById('textObservacoes').value);
         formData.append('proximo_responsavel', document.getElementById('selectProximoResponsavel').value);
         
+        // Imagem do CAD
         const fileInput = document.getElementById('inputImagemCAD');
         if (fileInput.files.length > 0) {
             formData.append('imagem_cad', fileInput.files[0]);
@@ -293,9 +292,8 @@
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                // Se salvou, fecha o modal e recarrega para ver a nova imagem no card
                 modalBootstrap.hide();
-                location.reload(); 
+                location.reload(); // Recarrega para atualizar o card no Kanban
             } else {
                 alert("Erro ao salvar: " + data.message);
             }
