@@ -129,23 +129,19 @@ def salvar_edicao_projeto(request):
         projeto.quantidade_figuras = request.POST.get("quantidade_figuras") or 1
         projeto.observacoes = request.POST.get("observacoes")
 
-        # Atualizando o próximo responsável se enviado
-        prox_resp_id = request.POST.get("proximo_responsavel")
-        if prox_resp_id:
-            projeto.responsavel_proxima_etapa_id = prox_resp_id
+        # AJUSTE AQUI:
+        novo_resp_id = request.POST.get("proximo_responsavel")
+        if novo_resp_id:
+            # Atualizamos o responsável_atual para que o Kanban reflita a mudança na hora
+            projeto.responsavel_atual_id = novo_resp_id
+            # Se você usa o campo de 'próxima etapa' para histórico, pode atualizar também:
+            projeto.responsavel_proxima_etapa_id = novo_resp_id
 
-        # Tratamento da Imagem do CAD (Substituição automática)
         if "imagem_cad" in request.FILES:
             projeto.imagem_cad = request.FILES["imagem_cad"]
 
         projeto.save()
 
-        return JsonResponse(
-            {
-                "status": "success",
-                "message": "Projeto atualizado com sucesso!",
-                "nova_imagem_url": projeto.imagem_exibicao,  # Retorna a URL para atualizar o card sem F5
-            }
-        )
+        return JsonResponse({"status": "success", "message": "Atualizado!"})
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)})
