@@ -108,8 +108,15 @@ class Projeto(models.Model):
         # Se houver imagem do CAD, usa ela. Se não, usa a da amostra.
         if self.imagem_cad:
             return self.imagem_cad.url
-        elif self.amostra.foto:
-            return self.amostra.foto.url
+
+        try:
+            if (
+                self.amostra.foto_amostra
+            ):  # <--- Troque 'imagem' pelo nome do campo na classe Amostra
+                return self.amostra.foto_amostra.url
+        except AttributeError:
+            return None
+
         return None
 
     def save(self, *args, **kwargs):
