@@ -112,5 +112,6 @@ def detalhes_projeto_json(request, projeto_id):
             if projeto.responsavel_proxima_fase
             else None
         ),
+        'imagem_url': projeto.imagem_exibicao if projeto.imagem_exibicao else None,
     }
     return JsonResponse(data)
