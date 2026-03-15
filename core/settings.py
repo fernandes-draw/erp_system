@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     # My APPS
     "crispy_forms",
     "crispy_bootstrap5",
+    "colorfield",
     "accounts",
     "desenvolvimento",
 ]
