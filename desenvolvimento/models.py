@@ -90,7 +90,7 @@ class Projeto(models.Model):
     qtd_caixas_macho = models.PositiveIntegerField(default=0)
 
     data_inicio = models.DateTimeField(auto_now_add=True)
-    ultima_atualização = models.DateTimeField(auto_now_add=True)
+    ultima_atualizacao = models.DateTimeField(auto_now_add=True)
     responsavel_atual = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True
     )

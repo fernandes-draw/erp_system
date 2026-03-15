@@ -102,7 +102,7 @@
                                         <span class="badge bg-info text-dark" style="width: fit-content;">{{ projeto.codigo_projeto }}</span>
                                         <h6 class="card-title text-light mb-0 mt-1">{{ projeto.amostra.codigo_peca }}</h6>
                                         <p class="small text-secondary mb-0">{{ projeto.amostra.cliente_nome }}</p>
-                                        <small class="text-muted" style="font-size: 0.72rem;">Recebido em: {{ projeto.amostra.data_recebimento|date:"d/m" }}</small>
+                                        <small class="text-muted" style="font-size: 0.72rem;">Atualizado: {{ projeto.ultima_atualizacao|date:"d/m H:i" }}</small>
                                     </div>
 
                                     {% if projeto.imagem_exibicao %}
