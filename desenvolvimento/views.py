@@ -112,6 +112,40 @@ def detalhes_projeto_json(request, projeto_id):
             if projeto.responsavel_proxima_fase
             else None
         ),
-        'imagem_url': projeto.imagem_exibicao if projeto.imagem_exibicao else None,
+        "imagem_url": projeto.imagem_exibicao if projeto.imagem_exibicao else None,
     }
     return JsonResponse(data)
+
+
+@require_POST
+def salvar_edicao_projeto(request):
+    projeto_id = request.POST.get("projeto_id")
+    projeto = Projeto.objects.get(id=projeto_id)
+
+    try:
+        # Atualizando campos numéricos e texto
+        projeto.peso_teorico = request.POST.get("peso_teorico") or 0
+        projeto.sobremetal = request.POST.get("sobremetal") or 0
+        projeto.quantidade_figuras = request.POST.get("quantidade_figuras") or 1
+        projeto.observacoes = request.POST.get("observacoes")
+
+        # Atualizando o próximo responsável se enviado
+        prox_resp_id = request.POST.get("proximo_responsavel")
+        if prox_resp_id:
+            projeto.responsavel_proxima_etapa_id = prox_resp_id
+
+        # Tratamento da Imagem do CAD (Substituição automática)
+        if "imagem_cad" in request.FILES:
+            projeto.imagem_cad = request.FILES["imagem_cad"]
+
+        projeto.save()
+
+        return JsonResponse(
+            {
+                "status": "success",
+                "message": "Projeto atualizado com sucesso!",
+                "nova_imagem_url": projeto.imagem_exibicao,  # Retorna a URL para atualizar o card sem F5
+            }
+        )
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)})
