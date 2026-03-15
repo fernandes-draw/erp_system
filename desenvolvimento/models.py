@@ -69,12 +69,20 @@ class Projeto(models.Model):
         null=True,
         blank=True,  # peso modelo 3D com sobre-metal calculado pelo software CAD
     )
-    sobremetal = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, verbose_name="Sobremetal (mm)")
-    quantidade_figuras = models.PositiveIntegerField(default=1, verbose_name="Figuras no Molde")
+    sobremetal = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="Sobremetal (mm)",
+    )
+    quantidade_figuras = models.PositiveIntegerField(
+        default=1, verbose_name="Figuras no Molde"
+    )
     observacoes = models.TextField(blank=True, null=True)
-    
+
     # Imagem do CAD
-    imagem_cad = models.ImageField(upload_to='projetos/cad/', null=True, blank=True)
+    imagem_cad = models.ImageField(upload_to="projetos/cad/", null=True, blank=True)
 
     # Estrutura ColdBox
     caixa_alta = models.BooleanField(default=False)
@@ -88,12 +96,21 @@ class Projeto(models.Model):
     )
     # Campo para definir quem assume a próxima etapa
     responsavel_proxima_fase = models.ForeignKey(
-        settings.AUTH_USER_MODEL, 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=True, 
-        related_name='projetos_a_assumir'
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="projetos_a_assumir",
     )
+
+    @property
+    def imagem_exibicao(self):
+        # Se houver imagem do CAD, usa ela. Se não, usa a da amostra.
+        if self.imagem_cad:
+            return self.imagem_cad.url
+        elif self.amostra.foto:
+            return self.amostra.foto.url
+        return None
 
     def save(self, *args, **kwargs):
         if not self.codigo_projeto:
