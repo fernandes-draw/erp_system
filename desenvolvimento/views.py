@@ -25,6 +25,19 @@ class AmostraListView(LoginRequiredMixin, ListView):
     ordering = ["-data_recebimento"]
 
 
+class ProjetoKanbanView(LoginRequiredMixin, ListView):
+    model = Projeto
+    template_name = "desenvolvimento/projeto_kanban.html"
+    context_object_name = "projetos"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Passamos as fases para o template criar as colunas
+        context["fases"] = Projeto.STATUS_PROJETO
+        return context
+
+
 def iniciar_projeto(request, amostra_id):
     amostra = get_object_or_404(Amostra, id=amostra_id)
 
