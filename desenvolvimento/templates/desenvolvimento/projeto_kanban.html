@@ -100,8 +100,11 @@
     });
 
     function abrirEdicaoProjeto(id) {
+        // Mudamos a forma de chamar a URL para ser dinâmica
+        const urlDetalhes = "{% url 'detalhes_projeto_json' 0 %}".replace('0', id);
+
         // Primeiro, buscamos os dados atuais do projeto no servidor
-        fetch(`/desenvolvimento/projeto/detalhes/${id}/`)
+        fetch(urlDetalhes)
             .then(response => response.json())
             .then(data => {
                 // Preenchemos os campos do modal com os dados que vieram do Django
