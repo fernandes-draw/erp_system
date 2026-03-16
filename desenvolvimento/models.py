@@ -93,6 +93,8 @@ class Projeto(models.Model):
 
     data_inicio = models.DateTimeField(auto_now_add=True)
     ultima_atualizacao = models.DateTimeField(auto_now_add=True)
+    criado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="projetos_criados")
     responsavel_atual = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True
     )
