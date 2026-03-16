@@ -49,7 +49,8 @@ def iniciar_projeto(request, amostra_id):
 
     # Verifica se já existe um projeto para essa amostra
     if hasattr(amostra, "projeto"):
-        messages.warning(request, "Esta amostra já possui um projeto vinculado.")
+        messages.warning(
+            request, "Esta amostra já possui um projeto vinculado.")
     else:
         # Cria o projeto. O método save() que editamos acima
         # vai gerar o código P-00000X automaticamente.
@@ -93,11 +94,13 @@ def detalhes_projeto_json(request, projeto_id):
     projeto = get_object_or_404(Projeto, id=projeto_id)
 
     try:
+        # Busca a lista de usuários para o select do modal
         usuarios = [
             {"id": u.id, "nome": u.get_full_name() or u.username}
             for u in CustomUser.objects.all()
         ]
 
+        # Monta os dados principais do projeto
         data = {
             "id": projeto.id,
             "codigo": projeto.codigo_projeto,
@@ -107,21 +110,22 @@ def detalhes_projeto_json(request, projeto_id):
             "peso_teorico": str(projeto.peso_teorico) if projeto.peso_teorico else "",
             "sobremetal": str(projeto.sobremetal) if projeto.sobremetal else "",
             "quantidade_figuras": projeto.quantidade_figuras,
-            "observacoes": projeto.observacoes or "",
+            "observacoes": projeto.observacoes or "",  # Se ainda usar o campo fixo
             "usuarios": usuarios,
             "responsavel_atual_id": (
                 projeto.responsavel_atual.id if projeto.responsavel_atual else None
             ),
+            # Usando imagem_cad.url para evitar o erro de 'imagem_exibicao'
             "imagem_url": projeto.imagem_cad.url if projeto.imagem_cad else None,
         }
 
-        # AQUI PODE ESTAR O ERRO: Verifique se historico_observacoes existe
+        # Adiciona a lista de observações do histórico
         data["observacoes_historico"] = [
             {
                 "usuario": obs.usuario.get_full_name() or obs.usuario.username,
                 "texto": obs.texto,
                 "data": obs.data_registro.strftime("%d/%m/%y %H:%M"),
-                "cor": getattr(obs.usuario, "cor_identificadora", "#ccc"),
+                "cor": getattr(obs.usuario, "cor_identificadora", "#17a2b8"),
             }
             for obs in projeto.historico_observacoes.all()
         ]
@@ -129,48 +133,9 @@ def detalhes_projeto_json(request, projeto_id):
         return JsonResponse(data)
 
     except Exception as e:
-        # Se der erro, isso vai imprimir no console do VS Code para você ler
+        # Isso aparecerá no terminal do VS Code se algo der errado
         print(f"ERRO NA VIEW: {e}")
         return JsonResponse({"error": str(e)}, status=500)
-    projeto = get_object_or_404(Projeto, id=projeto_id)
-    usuarios = [
-        {"id": u.id, "nome": u.get_full_name() or u.username}
-        for u in CustomUser.objects.all()
-    ]
-
-    # 1. Primeiro definimos o dicionário 'data' com os dados do PROJETO
-    data = {
-        "id": projeto.id,
-        "codigo": projeto.codigo_projeto,
-        "peca": projeto.amostra.codigo_peca,
-        "cliente": projeto.amostra.cliente_nome,
-        "status_nome": projeto.get_status_display(),
-        "peso_teorico": str(projeto.peso_teorico) if projeto.peso_teorico else "",
-        "sobremetal": str(projeto.sobremetal) if projeto.sobremetal else "",
-        "quantidade_figuras": projeto.quantidade_figuras,
-        "observacoes": projeto.observacoes or "",
-        "resultado_metalografia": projeto.amostra.requer_analise_metalografica,
-        "usuarios": usuarios,
-        "responsavel_proxima_id": (
-            projeto.responsavel_proxima_fase.id
-            if projeto.responsavel_proxima_fase
-            else None
-        ),
-        "imagem_url": projeto.imagem_exibicao if projeto.imagem_exibicao else None,
-    }
-
-    # 2. Depois adicionamos a LISTA de observações ao dicionário
-    data["observacoes_historico"] = [
-        {
-            "usuario": obs.usuario.get_full_name() or obs.usuario.username,
-            "texto": obs.texto,
-            "data": obs.data_registro.strftime("%d/%m/%y %H:%M"),
-            "cor": getattr(obs.usuario, "cor_identificadora", "#17a2b8"),
-        }
-        for obs in projeto.historico_observacoes.all()
-    ]
-
-    return JsonResponse(data)
 
 
 @require_POST
@@ -182,7 +147,8 @@ def salvar_edicao_projeto(request):
         # Atualizando campos numéricos e texto
         projeto.peso_teorico = request.POST.get("peso_teorico") or 0
         projeto.sobremetal = request.POST.get("sobremetal") or 0
-        projeto.quantidade_figuras = request.POST.get("quantidade_figuras") or 1
+        projeto.quantidade_figuras = request.POST.get(
+            "quantidade_figuras") or 1
         projeto.observacoes = request.POST.get("observacoes")
 
         # AJUSTE AQUI:
@@ -218,7 +184,8 @@ def adicionar_observacao(request):
                 "usuario": obs.usuario.get_full_name() or obs.usuario.username,
                 "data": obs.data_registro.strftime("%d/%m/%y %H:%M"),
                 "texto": obs.texto,
-                'cor': getattr(obs.usuario, 'cor_identificadora', '#17a2b8') # PEGA A COR REAL DO USUÁRIO
+                # PEGA A COR REAL DO USUÁRIO
+                'cor': getattr(obs.usuario, 'cor_identificadora', '#17a2b8')
             }
         )
     return JsonResponse({"status": "error", "message": "Texto vazio"})
