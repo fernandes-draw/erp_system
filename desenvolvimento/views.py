@@ -141,6 +141,42 @@ def detalhes_projeto_json(request, projeto_id):
 @require_POST
 def salvar_edicao_projeto(request):
     projeto_id = request.POST.get("projeto_id")
+    projeto = get_object_or_404(Projeto, id=projeto_id)
+
+    try:
+        # Tratando strings vazias para campos numéricos
+        peso = request.POST.get("peso_teorico")
+        projeto.peso_teorico = float(peso.replace(
+            ',', '.')) if peso and peso.strip() else 0
+
+        sobremetal = request.POST.get("sobremetal")
+        projeto.sobremetal = float(sobremetal.replace(
+            ',', '.')) if sobremetal and sobremetal.strip() else 0
+
+        qtd_figuras = request.POST.get("quantidade_figuras")
+        projeto.quantidade_figuras = int(
+            qtd_figuras) if qtd_figuras and qtd_figuras.strip() else 1
+
+        projeto.observacoes = request.POST.get("observacoes")
+
+        # Ajuste do Responsável
+        novo_resp_id = request.POST.get("proximo_responsavel")
+        if novo_resp_id and novo_resp_id.strip():
+            projeto.responsavel_atual_id = int(novo_resp_id)
+            # Verifique se o nome correto no model é fase ou etapa:
+            projeto.responsavel_proxima_fase_id = int(novo_resp_id)
+
+        if "imagem_cad" in request.FILES:
+            projeto.imagem_cad = request.FILES["imagem_cad"]
+
+        projeto.save()
+        return JsonResponse({"status": "success", "message": "Atualizado!"})
+
+    except Exception as e:
+        # Isso ajuda a ver o erro real no terminal
+        print(f"Erro ao salvar projeto: {e}")
+        return JsonResponse({"status": "error", "message": str(e)})
+    projeto_id = request.POST.get("projeto_id")
     projeto = Projeto.objects.get(id=projeto_id)
 
     try:
