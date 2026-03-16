@@ -24,7 +24,8 @@ class Amostra(models.Model):
         max_digits=10, decimal_places=3, null=True, blank=True
     )
     liga_produto = models.CharField(max_length=50, choices=LIGAS_CHOICE)
-    foto_amostra = models.ImageField(upload_to="amostras/", null=True, blank=True)
+    foto_amostra = models.ImageField(
+        upload_to="amostras/", null=True, blank=True)
 
     # Requisitos técnicos
     requer_analise_metalografica = models.BooleanField(default=True)
@@ -82,7 +83,8 @@ class Projeto(models.Model):
     observacoes = models.TextField(blank=True, null=True)
 
     # Imagem do CAD
-    imagem_cad = models.ImageField(upload_to="projetos/cad/", null=True, blank=True)
+    imagem_cad = models.ImageField(
+        upload_to="projetos/cad/", null=True, blank=True)
 
     # Estrutura ColdBox
     caixa_alta = models.BooleanField(default=False)
@@ -105,12 +107,51 @@ class Projeto(models.Model):
 
     # Adicione este modelo ao seu desenvolvimento/models.py
 
+    @property
+    def imagem_exibicao(self):
+        # Se houver imagem do CAD, usa ela. Se não, usa a da amostra.
+        if self.imagem_cad:
+            return self.imagem_cad.url
+
+        try:
+            if (
+                self.amostra.foto_amostra
+            ):  # <--- Troque 'imagem' pelo nome do campo na classe Amostra
+                return self.amostra.foto_amostra.url
+        except AttributeError:
+            return None
+
+        return None
+
+    def save(self, *args, **kwargs):
+        if not self.codigo_projeto:
+            # Busca o último projeto cadastrado
+            ultimo_projeto = Projeto.objects.order_by("id").last()
+
+            if not ultimo_projeto:
+                # Se for o primeiro projeto do sistema
+                novo_numero = 1
+            else:
+                # Pega o código do último (ex: P-000123) remove o "P-",
+                # convert em int e soma 1
+                ultimo_codigo = ultimo_projeto.codigo_projeto  # string "P-000123"
+                numero_limpo = int(ultimo_codigo.replace("P-", ""))
+                novo_numero = numero_limpo + 1
+
+            # Formata com prefixo e 6 dígitos (zfill preenche com zeros à esquerda)
+            self.codigo_projeto = f"P-{str(novo_numero).zfill(6)}"
+        super(Projeto, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.codigo_projeto
+
 
 class ProjetoObservacao(models.Model):
     projeto = models.ForeignKey(
         Projeto, on_delete=models.CASCADE, related_name="historico_observacoes"
     )
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     texto = models.TextField()
     data_registro = models.DateTimeField(auto_now_add=True)
 
@@ -121,44 +162,3 @@ class ProjetoObservacao(models.Model):
         return (
             f"{self.usuario.username} em {self.data_registro.strftime('%d/%m %H:%M')}"
         )
-
-
-@property
-def imagem_exibicao(self):
-    # Se houver imagem do CAD, usa ela. Se não, usa a da amostra.
-    if self.imagem_cad:
-        return self.imagem_cad.url
-
-    try:
-        if (
-            self.amostra.foto_amostra
-        ):  # <--- Troque 'imagem' pelo nome do campo na classe Amostra
-            return self.amostra.foto_amostra.url
-    except AttributeError:
-        return None
-
-    return None
-
-
-def save(self, *args, **kwargs):
-    if not self.codigo_projeto:
-        # Busca o último projeto cadastrado
-        ultimo_projeto = Projeto.objects.order_by("id").last()
-
-        if not ultimo_projeto:
-            # Se for o primeiro projeto do sistema
-            novo_numero = 1
-        else:
-            # Pega o código do último (ex: P-000123) remove o "P-",
-            # convert em int e soma 1
-            ultimo_codigo = ultimo_projeto.codigo_projeto  # string "P-000123"
-            numero_limpo = int(ultimo_codigo.replace("P-", ""))
-            novo_numero = numero_limpo + 1
-
-        # Formata com prefixo e 6 dígitos (zfill preenche com zeros à esquerda)
-        self.codigo_projeto = f"P-{str(novo_numero).zfill(6)}"
-    super(Projeto, self).save(*args, **kwargs)
-
-
-def __str__(self):
-    return self.codigo_projeto
